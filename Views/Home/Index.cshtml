@@ -1,0 +1,172 @@
+﻿@model MarcaViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <div class="row m-5">
+        <div class="col-md-12">
+            <input type="text" id="searchTerm" class="form-control" placeholder="Search for a brand" onkeyup="searchBrands()">
+        </div>
+    </div>
+    <br />
+    <div id="marcaList">
+        @Html.Partial("_MarcaList", Model)
+    </div>
+    <br />
+    <div class="m-5" id="modelos" hidden>
+        <div class="col-md-12 m-5">
+            <input type="text" id="modelSearchTerm" class="form-control" placeholder="Search for a Model" onkeyup="searchModels()">
+        </div>
+        <div id="ModelList"></div>
+    </div>
+
+    <div class="m-5" id="AnoVeiculo" hidden>
+        <div id="AnoVeiculoList"></div>
+    </div>
+
+    <div class="m-5" id="Fipe" hidden>
+
+    </div>
+
+</div>
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        function searchBrands() {
+            var searchTerm = $('#searchTerm').val();
+            $.ajax({
+                url: '@Url.Action("Search", "Home")',
+                data: { searchTerm: searchTerm },
+                success: function (data) {
+                    $('#marcaList').html(data);
+                }
+            });
+        }
+
+        function loadPage(page) {
+            var searchTerm = $('#searchTerm').val();
+            $.ajax({
+                url: '@Url.Action("Search", "Home")',
+                data: { searchTerm: searchTerm, page: page },
+                success: function (data) {
+                    $('#marcaList').html(data);
+                }
+            });
+        }
+
+        function searchModels() {
+            var searchTerm = $('#modelSearchTerm').val();
+            $.ajax({
+                url: '@Url.Action("Search", "MModelos")',
+                data: { searchTerm: searchTerm },
+                success: function (data) {
+                    $('#ModelList').html(data);
+                }
+            });
+        }
+
+        function showModal(event) {
+            console.log("Clicou em detalhes");
+            // Recupera o botão que chamou o modal
+            var button = $(event.currentTarget);
+            var marcaId = button.data("id");
+            marcaIdG = marcaId;
+            var marcaNome = button.data("nome");
+            var target = button.data('target');
+            // Define os dados no modal
+            var modal = $('#modelos');
+            modal.find('.modal-title').text('Modelos: ' + marcaNome);
+            modal.find('.modal-body').text('Carregando detalhes...');
+            // Faz a requisição AJAX para obter os modelos da marca
+            $.ajax({
+                url: '@Url.Action("Search", "MModelos")',
+                data: { id: marcaIdG, nomeMarca: marcaNome },
+                success: function (data) {
+                    $("#modelos").removeAttr('hidden');
+                    $('#ModelList').html(data);
+
+                    $('html, body').animate({
+                        scrollTop: $(target).offset().top
+                    }, 1000);
+
+                },
+                error: function () {
+                    $("#modelos").attr('hidden', 'hidden');
+                }
+            });
+        }
+
+
+        function showVersoes(event) {
+
+            // Recupera o botão que chamou o modal
+            var button = $(event.currentTarget);
+            var versaoId = button.data("id");
+            var marcaCodigo = button.data("marca")
+            versaoIdG = versaoId;
+            var versaoNome = button.data("nome");
+            var target = button.data('target');
+            // Define os dados no modal
+
+            // Faz a requisição AJAX para obter os modelos da versao
+            $.ajax({
+                url: '@Url.Action("AnoVeiculoSearch", "AnoVeiculo")',
+                data: { id: versaoIdG, nomeModelo: versaoNome, marca: marcaCodigo },
+                success: function (data) {
+                    $("#AnoVeiculo").removeAttr('hidden');
+                    $('#AnoVeiculoList').html(data);
+
+                    $('html, body').animate({
+                        scrollTop: $(target).offset().top
+                    }, 1000);
+
+                },
+                error: function (error) {
+                    $("#AnoVeiculo").attr('hidden', 'hidden');
+
+                }
+            });
+        }
+
+        //showFipe
+
+        function showFipe(event) {
+
+            // Recupera o botão que chamou o modal
+            var button = $(event.currentTarget);
+            var versaoId = button.data("id");
+            var marcaCodigo = button.data("marca")
+            var modeloCodigo = button.data("modelo")
+            versaoIdG = versaoId;
+            var versaoNome = button.data("nome");
+            var target = button.data('target');
+            // Define os dados no modal
+
+            // Faz a requisição AJAX para obter os modelos da versao
+            $.ajax({
+                url: '@Url.Action("SerachFipe", "Fipe")',
+                data: { id: versaoIdG, modelo: modeloCodigo, marca: marcaCodigo },
+                success: function (data) {
+                    $("#Fipe").removeAttr('hidden');
+                    $('#Fipe').html(data);
+
+                    $('html, body').animate({
+                        scrollTop: $(target).offset().top
+                    }, 1000);
+
+                },
+                error: function (error) {
+                    //$("#Fipe").attr('hidden', 'hidden');
+                    console.log(error);
+
+                }
+            });
+        }
+                
+    </script>
+}

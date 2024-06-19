@@ -1,0 +1,58 @@
+﻿@model VersoesModel
+
+<div class="row">
+    <div class="text-center">
+        <h3>Versoes Disponiveis: @Model.NomeModelo</h3>
+    </div>
+    <br />
+    @if (Model.Versoes.Count > 0)
+    {
+        @foreach (var versao in Model.Versoes)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@versao.nome</h5>
+                        <p class="card-text">Código: @versao.codigo</p>
+                        <button type="button" class="btn-success"
+                                data-toggle="modal"
+                                data-target="#Fipe"
+                                data-id="@versao.codigo"
+                                data-marca="@Model.marcaId"
+                                data-modelo="@Model.modeloId"
+                                data-nome="@versao.nome"
+                                onclick="showFipe(event)">
+                            Ver Detalhes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:void(0);" onclick="loadPage(@(Model.CurrentPage - 1))">Previous</a>
+                    </li>
+                }
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="javascript:void(0);" onclick="loadPage(@i)">@i</a>
+                    </li>
+                }
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:void(0);" onclick="loadPage(@(Model.CurrentPage + 1))">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
